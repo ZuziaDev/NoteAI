@@ -1,0 +1,20 @@
+module.exports = {
+  FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL || 'https://helical-realm-405709-default-rtdb.europe-west1.firebasedatabase.app',
+  DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID || '1477052200676233429',
+  DISCORD_LARGE_IMAGE_KEY: process.env.DISCORD_LARGE_IMAGE_KEY || 'https://cdn.discordapp.com/attachments/1198946013919068251/1477058726706938027/icon.png?ex=69a361a2&is=69a21022&hm=2a7c4226ed3f1f941c8e2abc3c048a98bb60551888c99953699f458512d13fe1&',
+  DISCORD_SMALL_IMAGE_KEY: process.env.DISCORD_SMALL_IMAGE_KEY || '',
+  DISCORD_RPC_CONFIG_URL: process.env.DISCORD_RPC_CONFIG_URL || 'https://cdn.discordapp.com/attachments/1198946013919068251/1477058726706938027/icon.png?ex=69a361a2&is=69a21022&hm=2a7c4226ed3f1f941c8e2abc3c048a98bb60551888c99953699f458512d13fe1&',
+  SERVICE_ACCOUNT: {
+    type: process.env.FIREBASE_SERVICE_ACCOUNT_TYPE || 'service_account',
+    project_id: process.env.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID || 'helical-realm-405709',
+    private_key_id: process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID || 'f686a68b96de1ec63a31e4bdaca95961c621154c',
+    private_key: process.env.FIREBASE_PRIVATE_KEY || '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDSF7+ifm0oxvLO\ns0p4tsBmnXmW+2YywCDt1uMwQLJY5kfnZF3s5HR7yY7wdpW19wH7uCax+MjmZ2fg\ny1qrthl8jaResYGUkI8adwkgPXP+UYkLr93nPQfBYz4PS1PSJkSMYXna4bHXdnUo\ncElbXiLZayKoB2zcf0+Pj3PoPW7tqQCcMrHKgWNMaqv9EPyHkSo3fUdr9/3Y33xf\nowQTRLK3IgqICMGiDXmetCiTO0R6O/W/0BjMpgQTB6kxFDnHQr/X7X4w26+Nrscc\nz9Bb9wRqQU15UUDQvtlMf8y8CDx0rbdHmSsQ3YWO2bw6HcwRxoP3yxxfcl2liw3m\nAYRyLKO3AgMBAAECggEACpkxGfdRXJ1aS8W53yIVAN6dbvNRIgR7ay2/RnfIQRM8\nE5CGhN6ETWeLHIojt+TCLSeKjpYNO6mB94Vt4wiryEYOJ/31AM1UGSxh6CyOQlYG\ncr6VLeBwMjf/8V4si21SLiTCtKFUsX8wnnDsenDJLRLda82U482DJXjB157o9PgA\nsvZD+0t+1tliGcyhRxt5XHNBcrAscFPAZOTFJsZndOD52HyJr9tNDo7DyArNqHlN\nC3ncS83nziSTwAz08ypc9WagfX5sKltEMiTG07Mb6hVsh1DFFLsScrRaX923elmq\n2ZHIY/xXLMG8qUdQ7IDJTQ5VuIkgF7kd6G8gf8Fk2QKBgQDtlkTmFlhUa7Op6k/b\neu3jjVkXrGFS/oHp4yxl/KK6h3Y3m13zvigGpH7iHrsjA2vUBRMtOBlp0SCKWw82\nc7SNDW9L5YVc3/6hlDBTCrS/oCQNeq2JcuB4VJM5UUolHLvsJ2o4F55DK5oROQcz\n34KmQHvuzrisT9QD6M0kbXq5qQKBgQDiX/5W9i5j/P/QasUKjWOFPGz/HggMxjPr\naAQjPPEqRV2DsMoyj5C6owB2kDzxQZ62erNl7y0eoeuuiIg+6rPz4zPsfLcKGj0H\n/gtBOUpp3WRa/BGh1SZG0ENXOiOGRqxr62Eq0gpiNnP46m7n/zaGLNlnnm1nZf2X\n3WxtDTaOXwKBgQC3XFjyRl6HUNPJGBfnqLj9/HG87oHyPo/fBT+XumGQmckn41Wg\nLqrPbZarRtJglFxctkn1hS0/2HFHtj1IZgX7Mlop9gp2Aj2PUEH3ZPTYS2xnpr1V\nrf4FgChbfRw/Bi0WddjpT3kKGBWAo0WmyCIZ0vyS8qHeAoH7PmlMat3jeQKBgGBD\ni+e1BmM0qiAZ1zK2j1SQLpWKUsgD3P5FHEVT3AYquyqOGl3H2TbUrBS/H3tEeVaF\n9RXq0JgPKSbuHmoK6n1S57iwDDI6mCt255hT4YYFRHDAcksMVhuU4p4MNiEamqXF\n0WshKJM9LrHyFzmGuMvz9HtwzntCzsUuvrXdAY8nAoGBAOi7R4PEqICyzgFmFcZX\n88au86dlqgVuu/5oMaPmqcgRuu8YZCZt4X7+cKNopVV7xtCD9WZlF8PAnpjQv3hc\nsBTsfeEmTv9bsY+LPsJZQxMBSkdUfohnShaahMNKEg2MJUgKcXWgGVWSiZ2Wi20S\nwQVk7Jvq6V3B/axXiBB5+wrS\n-----END PRIVATE KEY-----\n',
+    client_email: process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL || 'firebase-adminsdk-tm0un@helical-realm-405709.iam.gserviceaccount.com',
+    client_id: process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_ID || '115111129375565513300',
+    auth_uri: process.env.FIREBASE_SERVICE_ACCOUNT_AUTH_URI || 'https://accounts.google.com/o/oauth2/auth',
+    token_uri: process.env.FIREBASE_SERVICE_ACCOUNT_TOKEN_URI || 'https://oauth2.googleapis.com/token',
+    auth_provider_x509_cert_url: process.env.FIREBASE_SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL || 'https://www.googleapis.com/oauth2/v1/certs',
+    client_x509_cert_url: process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL || 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-tm0un%40helical-realm-405709.iam.gserviceaccount.com',
+    universe_domain: process.env.FIREBASE_SERVICE_ACCOUNT_UNIVERSE_DOMAIN || 'googleapis.com',
+  },
+}
