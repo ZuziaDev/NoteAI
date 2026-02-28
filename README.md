@@ -3,6 +3,14 @@
 NoteAI is a local-first desktop productivity app for Windows.
 It combines To-Do, Notes, TimeMap calendar, AI Chat, Focus mode, Firebase backup, and Discord RPC in one Electron app.
 
+## Visual
+
+![Visual 2](https://raw.githubusercontent.com/ZuziaDev/NoteAI/main/public/visual_2.png)
+![Visual 3](https://raw.githubusercontent.com/ZuziaDev/NoteAI/main/public/visual_3.png)
+![Visual 4](https://raw.githubusercontent.com/ZuziaDev/NoteAI/main/public/visual_4.png)
+![Visual 5](https://raw.githubusercontent.com/ZuziaDev/NoteAI/main/public/visual_5.png)
+![Visual 6](https://raw.githubusercontent.com/ZuziaDev/NoteAI/main/public/visual_6.png)
+![Visual 1](https://raw.githubusercontent.com/ZuziaDev/NoteAI/main/public/visual_1.png)
 ## Tech Stack
 
 - Electron + Vite + React + TypeScript
