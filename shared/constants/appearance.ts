@@ -10,6 +10,11 @@ export const DEFAULT_LOCAL_SETTINGS: LocalSettings = {
   themePreset: 'aurora',
   uiStylePreset: 'glass',
   language: 'tr',
+  timeMapColors: {
+    todo: '#f59e0b',
+    notes: '#94a3b8',
+    important: '#f43f5e',
+  },
   dailyBriefingEnabled: true,
   lastDailyBriefingDate: null,
 }
@@ -24,6 +29,10 @@ export const THEME_PRESET_LABELS: Record<ThemePreset, string> = {
   ocean: 'Ocean',
   copper: 'Copper',
   mono: 'Mono',
+  dawn: 'Dawn',
+  ember: 'Ember',
+  glacier: 'Glacier',
+  royal: 'Royal',
 }
 
 export const UI_STYLE_LABELS: Record<UiStylePreset, string> = {
@@ -32,6 +41,7 @@ export const UI_STYLE_LABELS: Record<UiStylePreset, string> = {
   outline: 'Outline',
   neon: 'Neon Deck',
   minimal: 'Minimal',
+  v02: 'UI v0.2',
 }
 
 export const DESIGN_PACKS: Array<{
@@ -96,5 +106,33 @@ export const DESIGN_PACKS: Array<{
     description: 'Renk daginikligini azaltan sade odak modu.',
     themePreset: 'mono',
     uiStylePreset: 'minimal',
+  },
+  {
+    id: 'dawn-v02',
+    label: 'Dawn v0.2',
+    description: 'Yeni nesil UI v0.2 kartlari ve yumusak sabah tonlari.',
+    themePreset: 'dawn',
+    uiStylePreset: 'v02',
+  },
+  {
+    id: 'ember-v02',
+    label: 'Ember v0.2',
+    description: 'Koyu zemin uzerinde ates tonlu vurucu v0.2 arayuz.',
+    themePreset: 'ember',
+    uiStylePreset: 'v02',
+  },
+  {
+    id: 'glacier-v02',
+    label: 'Glacier v0.2',
+    description: 'Soguk mavi tonlarla temiz ve yeni stil dashboard hissi.',
+    themePreset: 'glacier',
+    uiStylePreset: 'v02',
+  },
+  {
+    id: 'royal-v02',
+    label: 'Royal v0.2',
+    description: 'Derin lacivert ve premium vurgu renkleriyle UI v0.2.',
+    themePreset: 'royal',
+    uiStylePreset: 'v02',
   },
 ]

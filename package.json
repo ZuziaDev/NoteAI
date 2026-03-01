@@ -1,14 +1,18 @@
 {
   "name": "NoteAI",
   "private": true,
-  "version": "0.2.1",
+  "version": "1.0.3",
   "type": "module",
   "main": "dist-electron/main/index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "dist": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis --config.win.signAndEditExecutable=false",
+    "dist": "npm run build && node tools/dist-win-if-possible.mjs && node tools/dist-mac-if-possible.mjs",
+    "dist:win": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis --config.win.signAndEditExecutable=false && npm run release:docs",
+    "dist:mac": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dmg && npm run release:docs",
+    "dist:all": "npm run dist",
     "dist:dir": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis --dir --config.win.signAndEditExecutable=false",
+    "release:docs": "node tools/generate-release-docs.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -41,6 +45,12 @@
       "target": [
         "nsis"
       ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity"
     },
     "nsis": {
       "oneClick": false,

@@ -3,6 +3,7 @@ import type { NoteFileRecord, TimeMapNote, TodoItem } from '../../../shared/type
 import { useI18n } from '../../lib/i18n'
 import { semanticIncludes } from '../../lib/semanticSearch'
 import { storageApi } from '../../lib/storageApi'
+import { useAppearanceStore } from '../../stores/appearanceStore'
 
 type TimeMapPanelProps = {
   query: string
@@ -12,6 +13,11 @@ type DayCounters = {
   todos: number
   notes: number
   mapNotes: number
+  topItem: {
+    kind: 'todo' | 'note' | 'map'
+    label: string
+    score: number
+  } | null
 }
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -71,6 +77,21 @@ const buildMonthCells = (baseMonth: Date) => {
 }
 
 const normalize = (value: string) => value.trim().toLowerCase()
+const IMPORTANT_TODO_KEYWORDS = ['acil', 'urgent', 'kritik', 'critical', 'bug']
+const IMPORTANT_NOTE_KEYWORDS = ['acil', 'urgent', 'onemli', 'important', 'kritik']
+
+const hexToRgba = (hex: string, alpha: number) => {
+  const clean = hex.replace('#', '')
+  if (clean.length !== 6) return `rgba(255,255,255,${alpha})`
+  const r = Number.parseInt(clean.slice(0, 2), 16)
+  const g = Number.parseInt(clean.slice(2, 4), 16)
+  const b = Number.parseInt(clean.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+const clampLabel = (label: string, max = 18) =>
+  label.length > max ? `${label.slice(0, Math.max(0, max - 1)).trimEnd()}…` : label
+
 const parseTags = (raw: string) =>
   raw
     .split(',')
@@ -80,6 +101,7 @@ const parseTags = (raw: string) =>
 
 export const TimeMapPanel = ({ query }: TimeMapPanelProps) => {
   const { t, locale, language } = useI18n()
+  const localSettings = useAppearanceStore((state) => state.settings)
   const [todos, setTodos] = useState<TodoItem[]>([])
   const [notes, setNotes] = useState<NoteFileRecord[]>([])
   const [timeMapNotes, setTimeMapNotes] = useState<TimeMapNote[]>([])
@@ -151,25 +173,75 @@ export const TimeMapPanel = ({ query }: TimeMapPanelProps) => {
     const ensure = (dayKey: string) => {
       const existing = map.get(dayKey)
       if (existing) return existing
-      const created: DayCounters = { todos: 0, notes: 0, mapNotes: 0 }
+      const created: DayCounters = {
+        todos: 0,
+        notes: 0,
+        mapNotes: 0,
+        topItem: null,
+      }
       map.set(dayKey, created)
       return created
+    }
+
+    const setTopItem = (
+      dayKey: string,
+      candidate: DayCounters['topItem'],
+    ) => {
+      if (!candidate) return
+      const bucket = ensure(dayKey)
+      if (!bucket.topItem || candidate.score > bucket.topItem.score) {
+        bucket.topItem = candidate
+      }
     }
 
     for (const todo of filteredTodos) {
       const dayKey = toDayKeyFromIso(todo.dueAt)
       if (!dayKey) continue
-      ensure(dayKey).todos += 1
+      const bucket = ensure(dayKey)
+      bucket.todos += 1
+
+      const lowered = `${todo.title} ${todo.tags.join(' ')}`.toLowerCase()
+      const keywordBoost = IMPORTANT_TODO_KEYWORDS.some((keyword) =>
+        lowered.includes(keyword),
+      )
+      const overdueBoost =
+        !todo.done && todo.dueAt && new Date(todo.dueAt).getTime() < Date.now() ? 25 : 0
+      const priorityScore =
+        todo.priority === 'High' ? 300 : todo.priority === 'Medium' ? 220 : 160
+      const donePenalty = todo.done ? -100 : 0
+      const score = priorityScore + overdueBoost + (keywordBoost ? 30 : 0) + donePenalty
+
+      setTopItem(dayKey, {
+        kind: 'todo',
+        label: clampLabel(todo.title),
+        score,
+      })
     }
 
     for (const note of filteredNotes) {
       const dayKey = toDayKeyFromIso(note.updatedAt)
       if (!dayKey) continue
       ensure(dayKey).notes += 1
+
+      setTopItem(dayKey, {
+        kind: 'note',
+        label: clampLabel(note.title),
+        score: 90,
+      })
     }
 
     for (const mapNote of filteredTimeMapNotes) {
-      ensure(mapNote.date).mapNotes += 1
+      const bucket = ensure(mapNote.date)
+      bucket.mapNotes += 1
+      const lowered = `${mapNote.title} ${mapNote.tags.join(' ')} ${mapNote.content}`.toLowerCase()
+      const keywordBoost = IMPORTANT_NOTE_KEYWORDS.some((keyword) =>
+        lowered.includes(keyword),
+      )
+      setTopItem(mapNote.date, {
+        kind: 'map',
+        label: clampLabel(mapNote.title),
+        score: keywordBoost ? 200 : 120,
+      })
     }
 
     return map
@@ -195,6 +267,7 @@ export const TimeMapPanel = ({ query }: TimeMapPanelProps) => {
     () => filteredTimeMapNotes.filter((note) => note.date === selectedDate),
     [filteredTimeMapNotes, selectedDate],
   )
+  const selectedDayCounters = counters.get(selectedDate)
 
   const clearEditor = () => {
     setEditingNoteId(null)
@@ -312,6 +385,21 @@ export const TimeMapPanel = ({ query }: TimeMapPanelProps) => {
     month: 'long',
     year: 'numeric',
   })
+  const todoBadgeStyle = {
+    borderColor: hexToRgba(localSettings.timeMapColors.todo, 0.55),
+    backgroundColor: hexToRgba(localSettings.timeMapColors.todo, 0.2),
+    color: localSettings.timeMapColors.todo,
+  }
+  const notesBadgeStyle = {
+    borderColor: hexToRgba(localSettings.timeMapColors.notes, 0.5),
+    backgroundColor: hexToRgba(localSettings.timeMapColors.notes, 0.18),
+    color: localSettings.timeMapColors.notes,
+  }
+  const importantBadgeStyle = {
+    borderColor: hexToRgba(localSettings.timeMapColors.important, 0.6),
+    backgroundColor: hexToRgba(localSettings.timeMapColors.important, 0.22),
+    color: localSettings.timeMapColors.important,
+  }
 
   return (
     <section className="space-y-4">
@@ -403,18 +491,28 @@ export const TimeMapPanel = ({ query }: TimeMapPanelProps) => {
                 </div>
                 <div className="mt-2 space-y-1">
                   {day?.todos ? (
-                    <p className="rounded-lg border border-amber-200/30 bg-amber-300/15 px-1.5 py-1 text-[11px] text-amber-100">
+                    <p
+                      className="rounded-lg border px-1.5 py-1 text-[11px]"
+                      style={todoBadgeStyle}
+                    >
                       To-Do: {day.todos}
                     </p>
                   ) : null}
                   {day?.notes ? (
-                    <p className="rounded-lg border border-slate-200/20 bg-slate-300/10 px-1.5 py-1 text-[11px] text-slate-200">
+                    <p
+                      className="rounded-lg border px-1.5 py-1 text-[11px]"
+                      style={notesBadgeStyle}
+                    >
                       Notes: {day.notes}
                     </p>
                   ) : null}
-                  {day?.mapNotes ? (
-                    <p className="rounded-lg border border-cyan-200/30 bg-cyan-300/15 px-1.5 py-1 text-[11px] text-cyan-100">
-                      {t('Takvim Notu', 'Map Note')}: {day.mapNotes}
+                  {day?.topItem ? (
+                    <p
+                      className="rounded-lg border px-1.5 py-1 text-[11px]"
+                      style={importantBadgeStyle}
+                      title={day.topItem.label}
+                    >
+                      {t('Onemli', 'Top')}: {day.topItem.label}
                     </p>
                   ) : null}
                 </div>
@@ -432,6 +530,17 @@ export const TimeMapPanel = ({ query }: TimeMapPanelProps) => {
           <h3 className="mt-2 font-display text-lg text-slate-100">
             {toDisplayDate(selectedDate, locale)}
           </h3>
+          {selectedDayCounters?.topItem ? (
+            <div
+              className="mt-3 inline-flex max-w-full items-center rounded-xl border px-2.5 py-1.5 text-xs"
+              style={importantBadgeStyle}
+              title={selectedDayCounters.topItem.label}
+            >
+              <span className="truncate">
+                {t('Gunun En Onemlisi', 'Top Item of the Day')}: {selectedDayCounters.topItem.label}
+              </span>
+            </div>
+          ) : null}
 
           <div className="mt-4 space-y-3">
             <div className="rounded-xl border border-cyan-200/20 bg-cyan-300/10 p-3">

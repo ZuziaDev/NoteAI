@@ -256,28 +256,55 @@ export const FocusPanel = ({ query }: FocusPanelProps) => {
       const context = new AudioCtor()
       const volume = clamp(activeSettings.alarmVolume, 0, 100) / 100
       const now = context.currentTime
-      const sequence = [880, 988, 1174]
+      const melody: Array<{ frequency: number; duration: number }> = [
+  // Giriş (yumuşak)
+  { frequency: 523.25, duration: 0.16 }, // C5
+  { frequency: 587.33, duration: 0.14 }, // D5
+  { frequency: 659.25, duration: 0.16 }, // E5
 
-      sequence.forEach((frequency, index) => {
+  // Yükselme
+  { frequency: 783.99, duration: 0.18 }, // G5
+  { frequency: 880.00, duration: 0.20 }, // A5
+  { frequency: 987.77, duration: 0.22 }, // B5
+
+  // Zirve (vurgulu)
+  { frequency: 1046.50, duration: 0.28 }, // C6
+
+  // Çözülme
+  { frequency: 987.77, duration: 0.18 }, // B5
+  { frequency: 880.00, duration: 0.16 }, // A5
+  { frequency: 783.99, duration: 0.20 }, // G5
+
+  // Kapanış
+  { frequency: 659.25, duration: 0.22 }, // E5
+  { frequency: 523.25, duration: 0.30 }, // C5
+]
+
+      let cursor = now
+      melody.forEach(({ frequency, duration }) => {
         const oscillator = context.createOscillator()
         const gain = context.createGain()
-        const start = now + index * 0.22
-        const stop = start + 0.18
+        const start = cursor
+        const stop = start + duration
+        const peak = Math.max(0.0001, volume * 0.85)
 
-        oscillator.type = 'sine'
+        oscillator.type = 'triangle'
         oscillator.frequency.setValueAtTime(frequency, start)
+        oscillator.frequency.linearRampToValueAtTime(frequency * 1.01, stop)
         gain.gain.setValueAtTime(0.0001, start)
-        gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, volume), start + 0.02)
+        gain.gain.exponentialRampToValueAtTime(peak, start + 0.02)
         gain.gain.exponentialRampToValueAtTime(0.0001, stop)
         oscillator.connect(gain)
         gain.connect(context.destination)
         oscillator.start(start)
         oscillator.stop(stop)
+
+        cursor = stop + 0.05
       })
 
       window.setTimeout(() => {
         void context.close().catch(() => {})
-      }, 1200)
+      }, Math.ceil((cursor - now + 0.2) * 1000))
     } catch {
       // Ignore audio API failures and continue UX without sound.
     }

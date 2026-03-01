@@ -116,6 +116,44 @@ const complianceStore = new Store<ComplianceStoreSchema>({
 const getUserDataPath = () => app.getPath('userData')
 const getLegacyNotePath = () => path.join(getUserDataPath(), LEGACY_NOTE_FILE)
 const getNotesDirectoryPath = () => path.join(getUserDataPath(), NOTE_DIR_NAME)
+const VALID_THEME_PRESETS = new Set([
+  'aurora',
+  'sunset',
+  'forest',
+  'midnight',
+  'sand',
+  'neon',
+  'ocean',
+  'copper',
+  'mono',
+  'dawn',
+  'ember',
+  'glacier',
+  'royal',
+])
+const VALID_UI_STYLES = new Set([
+  'glass',
+  'solid',
+  'outline',
+  'neon',
+  'minimal',
+  'v02',
+])
+const HEX_COLOR_PATTERN = /^#([0-9a-f]{6})$/i
+
+const sanitizeHexColor = (value: unknown, fallback: string) =>
+  typeof value === 'string' && HEX_COLOR_PATTERN.test(value.trim())
+    ? value.trim()
+    : fallback
+
+const normalizeTimeMapColors = (value: LocalSettings['timeMapColors'] | undefined) => ({
+  todo: sanitizeHexColor(value?.todo, DEFAULT_LOCAL_SETTINGS.timeMapColors.todo),
+  notes: sanitizeHexColor(value?.notes, DEFAULT_LOCAL_SETTINGS.timeMapColors.notes),
+  important: sanitizeHexColor(
+    value?.important,
+    DEFAULT_LOCAL_SETTINGS.timeMapColors.important,
+  ),
+})
 
 const normalizeLocalSettings = (
   settings: Partial<LocalSettings> | undefined,
@@ -127,9 +165,16 @@ const normalizeLocalSettings = (
 
   return {
     ...merged,
+    themePreset: VALID_THEME_PRESETS.has(merged.themePreset)
+      ? merged.themePreset
+      : DEFAULT_LOCAL_SETTINGS.themePreset,
+    uiStylePreset: VALID_UI_STYLES.has(merged.uiStylePreset)
+      ? merged.uiStylePreset
+      : DEFAULT_LOCAL_SETTINGS.uiStylePreset,
     language: merged.language === 'en' ? 'en' : 'tr',
     syncConflictStrategy:
       merged.syncConflictStrategy === 'latest' ? 'latest' : 'merge',
+    timeMapColors: normalizeTimeMapColors(merged.timeMapColors),
   }
 }
 
@@ -1508,14 +1553,19 @@ export const isLocalBackupPayload = (
     settings.themePreset === 'neon' ||
     settings.themePreset === 'ocean' ||
     settings.themePreset === 'copper' ||
-    settings.themePreset === 'mono'
+    settings.themePreset === 'mono' ||
+    settings.themePreset === 'dawn' ||
+    settings.themePreset === 'ember' ||
+    settings.themePreset === 'glacier' ||
+    settings.themePreset === 'royal'
   const validUiStyle =
     settings.uiStylePreset === undefined ||
     settings.uiStylePreset === 'glass' ||
     settings.uiStylePreset === 'solid' ||
     settings.uiStylePreset === 'outline' ||
     settings.uiStylePreset === 'neon' ||
-    settings.uiStylePreset === 'minimal'
+    settings.uiStylePreset === 'minimal' ||
+    settings.uiStylePreset === 'v02'
   const validConflictStrategy =
     settings.syncConflictStrategy === undefined ||
     settings.syncConflictStrategy === 'latest' ||
@@ -1524,6 +1574,19 @@ export const isLocalBackupPayload = (
     settings.language === undefined ||
     settings.language === 'tr' ||
     settings.language === 'en'
+  const validTimeMapColors =
+    settings.timeMapColors === undefined ||
+    (typeof settings.timeMapColors === 'object' &&
+      settings.timeMapColors !== null &&
+      (settings.timeMapColors.todo === undefined ||
+        (typeof settings.timeMapColors.todo === 'string' &&
+          HEX_COLOR_PATTERN.test(settings.timeMapColors.todo))) &&
+      (settings.timeMapColors.notes === undefined ||
+        (typeof settings.timeMapColors.notes === 'string' &&
+          HEX_COLOR_PATTERN.test(settings.timeMapColors.notes))) &&
+      (settings.timeMapColors.important === undefined ||
+        (typeof settings.timeMapColors.important === 'string' &&
+          HEX_COLOR_PATTERN.test(settings.timeMapColors.important))))
   const validBriefingDate =
     settings.lastDailyBriefingDate === undefined ||
     settings.lastDailyBriefingDate === null ||
@@ -1537,6 +1600,7 @@ export const isLocalBackupPayload = (
     !validUiStyle ||
     !validConflictStrategy ||
     !validLanguage ||
+    !validTimeMapColors ||
     !validBriefingDate
   ) {
     return false

@@ -28,8 +28,45 @@ const FALLBACK_RESTORE_DECISIONS_KEY = 'noteai.fallback.restore-decisions'
 const FALLBACK_NOTES_KEY = 'noteai.fallback.notes'
 const FALLBACK_TIMEMAP_NOTES_KEY = 'noteai.fallback.timemap-notes'
 const FALLBACK_NOTE_VERSIONS_KEY = 'noteai.fallback.note-versions'
+const HEX_COLOR_PATTERN = /^#([0-9a-f]{6})$/i
+const VALID_THEME_PRESETS = new Set([
+  'aurora',
+  'sunset',
+  'forest',
+  'midnight',
+  'sand',
+  'neon',
+  'ocean',
+  'copper',
+  'mono',
+  'dawn',
+  'ember',
+  'glacier',
+  'royal',
+])
+const VALID_UI_STYLES = new Set([
+  'glass',
+  'solid',
+  'outline',
+  'neon',
+  'minimal',
+  'v02',
+])
 
 const isStorageAvailable = () => Boolean(window.noteai?.storage)
+const sanitizeHexColor = (value: unknown, fallback: string) =>
+  typeof value === 'string' && HEX_COLOR_PATTERN.test(value.trim())
+    ? value.trim()
+    : fallback
+
+const normalizeTimeMapColors = (value: LocalSettings['timeMapColors'] | undefined) => ({
+  todo: sanitizeHexColor(value?.todo, DEFAULT_LOCAL_SETTINGS.timeMapColors.todo),
+  notes: sanitizeHexColor(value?.notes, DEFAULT_LOCAL_SETTINGS.timeMapColors.notes),
+  important: sanitizeHexColor(
+    value?.important,
+    DEFAULT_LOCAL_SETTINGS.timeMapColors.important,
+  ),
+})
 
 const fallbackLoadTodos = (): TodoItem[] => {
   const raw = localStorage.getItem(FALLBACK_TODOS_KEY)
@@ -80,9 +117,16 @@ const fallbackLoadLocalSettings = (): LocalSettings => {
     }
     return {
       ...merged,
+      themePreset: VALID_THEME_PRESETS.has(merged.themePreset)
+        ? merged.themePreset
+        : DEFAULT_LOCAL_SETTINGS.themePreset,
+      uiStylePreset: VALID_UI_STYLES.has(merged.uiStylePreset)
+        ? merged.uiStylePreset
+        : DEFAULT_LOCAL_SETTINGS.uiStylePreset,
       language: merged.language === 'en' ? 'en' : 'tr',
       syncConflictStrategy:
         merged.syncConflictStrategy === 'latest' ? 'latest' : 'merge',
+      timeMapColors: normalizeTimeMapColors(merged.timeMapColors),
     }
   } catch {
     return DEFAULT_LOCAL_SETTINGS
@@ -96,9 +140,16 @@ const fallbackSaveLocalSettings = (settings: LocalSettings): LocalSettings => {
   }
   const normalized: LocalSettings = {
     ...merged,
+    themePreset: VALID_THEME_PRESETS.has(merged.themePreset)
+      ? merged.themePreset
+      : DEFAULT_LOCAL_SETTINGS.themePreset,
+    uiStylePreset: VALID_UI_STYLES.has(merged.uiStylePreset)
+      ? merged.uiStylePreset
+      : DEFAULT_LOCAL_SETTINGS.uiStylePreset,
     language: merged.language === 'en' ? 'en' : 'tr',
     syncConflictStrategy:
       merged.syncConflictStrategy === 'latest' ? 'latest' : 'merge',
+    timeMapColors: normalizeTimeMapColors(merged.timeMapColors),
   }
   localStorage.setItem(FALLBACK_LOCAL_SETTINGS_KEY, JSON.stringify(normalized))
   return normalized
@@ -284,9 +335,16 @@ export const storageApi = {
     }
     return {
       ...merged,
+      themePreset: VALID_THEME_PRESETS.has(merged.themePreset)
+        ? merged.themePreset
+        : DEFAULT_LOCAL_SETTINGS.themePreset,
+      uiStylePreset: VALID_UI_STYLES.has(merged.uiStylePreset)
+        ? merged.uiStylePreset
+        : DEFAULT_LOCAL_SETTINGS.uiStylePreset,
       language: merged.language === 'en' ? 'en' : 'tr',
       syncConflictStrategy:
         merged.syncConflictStrategy === 'latest' ? 'latest' : 'merge',
+      timeMapColors: normalizeTimeMapColors(merged.timeMapColors),
     }
   },
   saveLocalSettings: async (settings: LocalSettings): Promise<LocalSettings> => {

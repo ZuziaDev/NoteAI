@@ -24,7 +24,14 @@ import { useAuthStore } from '../../stores/authStore'
 
 const providers: AIProvider[] = ['openai', 'claude', 'gemini', 'other']
 const themePresets = Object.keys(THEME_PRESET_LABELS) as ThemePreset[]
-const uiPresets: UiStylePreset[] = ['glass', 'solid', 'outline', 'neon', 'minimal']
+const uiPresets: UiStylePreset[] = [
+  'glass',
+  'solid',
+  'outline',
+  'neon',
+  'minimal',
+  'v02',
+]
 const languageOptions: AppLanguage[] = ['tr', 'en']
 
 export const SettingsPanel = () => {
@@ -228,6 +235,23 @@ export const SettingsPanel = () => {
     )
   }
 
+  const handleTimeMapColorChange = async (
+    key: 'todo' | 'notes' | 'important',
+    value: string,
+  ) => {
+    const saved = await patchLocalSettings({
+      timeMapColors: {
+        ...localSettings.timeMapColors,
+        [key]: value,
+      },
+    })
+    setAppearanceMessage(
+      saved
+        ? t('TimeMap renkleri kaydedildi.', 'TimeMap colors saved.')
+        : t('TimeMap renkleri kaydedilemedi.', 'TimeMap colors could not be saved.'),
+    )
+  }
+
   const handleCloudSyncToggle = async () => {
     const enableCloudSync = !localSettings.cloudBackupEnabled
     setCloudMessage(null)
@@ -410,6 +434,53 @@ export const SettingsPanel = () => {
                 )
               })}
             </div>
+            <p className="mt-2 text-xs text-slate-400">
+              {t(
+                'Yeni arayuz icin UI v0.2 secenegini dene.',
+                'Try UI v0.2 for the refreshed layout.',
+              )}
+            </p>
+          </div>
+
+          <div className="mt-4">
+            <p className="mb-2 text-xs uppercase tracking-[0.12em] text-slate-400">
+              {t('TimeMap Renkleri', 'TimeMap Colors')}
+            </p>
+            <div className="grid gap-2 md:grid-cols-3">
+              <label className="rounded-xl border border-white/10 bg-white/5 p-2 text-xs text-slate-200">
+                {t('To-Do Rozeti', 'To-Do Badge')}
+                <input
+                  type="color"
+                  value={localSettings.timeMapColors.todo}
+                  onChange={(event) =>
+                    void handleTimeMapColorChange('todo', event.target.value)
+                  }
+                  className="mt-2 h-9 w-full cursor-pointer rounded-lg border border-white/20 bg-transparent"
+                />
+              </label>
+              <label className="rounded-xl border border-white/10 bg-white/5 p-2 text-xs text-slate-200">
+                {t('Notes Rozeti', 'Notes Badge')}
+                <input
+                  type="color"
+                  value={localSettings.timeMapColors.notes}
+                  onChange={(event) =>
+                    void handleTimeMapColorChange('notes', event.target.value)
+                  }
+                  className="mt-2 h-9 w-full cursor-pointer rounded-lg border border-white/20 bg-transparent"
+                />
+              </label>
+              <label className="rounded-xl border border-white/10 bg-white/5 p-2 text-xs text-slate-200">
+                {t('Onemli Rozeti', 'Important Badge')}
+                <input
+                  type="color"
+                  value={localSettings.timeMapColors.important}
+                  onChange={(event) =>
+                    void handleTimeMapColorChange('important', event.target.value)
+                  }
+                  className="mt-2 h-9 w-full cursor-pointer rounded-lg border border-white/20 bg-transparent"
+                />
+              </label>
+            </div>
           </div>
 
           <div className="mt-4">
@@ -471,7 +542,7 @@ export const SettingsPanel = () => {
                   syncConflictStrategy: event.target.value as 'latest' | 'merge',
                 })
               }
-              className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
+              className="app-select mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
             >
               <option value="merge">{t('Merge (Birlestir)', 'Merge')}</option>
               <option value="latest">{t('Latest (En yeni)', 'Latest')}</option>

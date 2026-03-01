@@ -498,7 +498,7 @@ export const TodoPanel = ({ query }: TodoPanelProps) => {
           <select
             value={draftPriority}
             onChange={(event) => setDraftPriority(event.target.value as TodoPriority)}
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
+            className="app-select rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -515,7 +515,7 @@ export const TodoPanel = ({ query }: TodoPanelProps) => {
           <select
             value={draftTemplateId}
             onChange={(event) => applyTemplate(event.target.value)}
-            className="rounded-xl border border-cyan-200/20 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100 outline-none"
+            className="app-select rounded-xl border border-cyan-200/20 bg-cyan-300/10 px-3 py-2 text-sm text-cyan-100 outline-none"
           >
             <option value="">{t('Sablon sec', 'Select template')}</option>
             {TODO_TEMPLATES.map((template) => (
@@ -527,7 +527,7 @@ export const TodoPanel = ({ query }: TodoPanelProps) => {
           <select
             value={draftRecurrence}
             onChange={(event) => setDraftRecurrence(event.target.value as TodoRecurrence)}
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
+            className="app-select rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
           >
             <option value="none">{t('Tek Sefer', 'One-time')}</option>
             <option value="daily">{t('Gunluk', 'Daily')}</option>
@@ -549,7 +549,7 @@ export const TodoPanel = ({ query }: TodoPanelProps) => {
           <select
             value={draftLinkedNoteId}
             onChange={(event) => setDraftLinkedNoteId(event.target.value)}
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
+            className="app-select rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 outline-none"
           >
             <option value="">{t('Nota baglama', 'No linked note')}</option>
             {notes.map((note) => (

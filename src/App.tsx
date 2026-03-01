@@ -250,7 +250,11 @@ function App() {
   }
 
   return (
-    <div className="app-shell relative min-h-screen overflow-hidden p-3 sm:p-4 lg:p-6">
+    <div
+      className={`app-shell relative min-h-screen overflow-hidden p-3 sm:p-4 lg:p-6 ${
+        localSettings.uiStylePreset === 'v02' ? 'ui-v02-layout' : ''
+      }`}
+    >
       <div className="aurora-spot aurora-spot-a" />
       <div className="aurora-spot aurora-spot-b" />
 
