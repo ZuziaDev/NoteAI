@@ -59,12 +59,10 @@ const run = async () => {
   } catch {
     versionReadme = "";
   }
-
   const versionSection = extractVersionSection(versionReadme, version);
   const artifacts = await listReleaseArtifacts(releaseDir);
   const artifactLines =
     artifacts.length > 0 ? artifacts.join("\n") : "- _(No build artifacts found yet)_";
-
   const readmeContent = `# ${productName} ${version} Release Notes
 
 This folder contains packaged artifacts for \`${productName} ${version}\`.
