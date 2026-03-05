@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 export type AppSection = 'todos' | 'timemap' | 'notes' | 'chat' | 'focus' | 'settings'
 
+
 type UIStore = {
   activeSection: AppSection
   searchQuery: string
@@ -12,6 +13,7 @@ type UIStore = {
   triggerChatSummary: () => void
   markChatSummaryHandled: (tick: number) => void
 }
+
 
 export const useUIStore = create<UIStore>((set) => ({
   activeSection: 'todos',
@@ -29,3 +31,4 @@ export const useUIStore = create<UIStore>((set) => ({
         : state,
     ),
 }))
+
